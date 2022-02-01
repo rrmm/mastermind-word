@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8">
+  <head>
+    <link rel="icon" href="data:,">
+    <style>
+      #message-area {
+          text-align: center;
+          font-family: sans;
+          height: 3em;
+      }
+      
+      #board {
+          display: grid;
+          grid-template-columns: repeat(5, 4em);
+          grid-template-rows: repeat(5, 4em);
+          gap: .5em;
+          justify-content: center;
+      }
+
+      .letterbox {
+          font-family: sans;
+          text-align: center;
+          font-size: 3em;
+          border: solid 2px;
+          justify-self: stretch;
+      }
+
+
+      #alphabet {
+          display: grid;
+          grid-template-columns: repeat(10, 2em);
+          grid-template-rows: 2em 2em 2em;
+                                       
+                           
+          gap: .25em;
+          justify-content: center;
+      }
+      
+      .keyboard {
+          font-family: sans;
+          text-align: center;
+          font-size: 1.25em;
+          border: solid 2px;
+          justify-self: stretch;
+      }
+      
+
+      .bggray {
+          background: gray;
+      }
+
+      .bggreen {
+          background: green;
+      }
+
+      .bgyellow {
+          background: yellow;
+      }
+      
+      
+    </style>
+  </head>
+  <body>
+    <div id="message-area">
+    </div>
+
+    <div id="board">
+      <div id="L00" class="letterbox"></div>
+      <div id="L01" class="letterbox"></div>
+      <div id="L02" class="letterbox"></div>
+      <div id="L03" class="letterbox"></div>
+      <div id="L04" class="letterbox"></div>
+
+      <div id="L10" class="letterbox"></div>
+      <div id="L11" class="letterbox"></div>
+      <div id="L12" class="letterbox"></div>
+      <div id="L13" class="letterbox"></div>
+      <div id="L14" class="letterbox"></div>
+
+      <div id="L20" class="letterbox"></div>
+      <div id="L21" class="letterbox"></div>
+      <div id="L22" class="letterbox"></div>
+      <div id="L23" class="letterbox"></div>
+      <div id="L24" class="letterbox"></div>
+
+      <div id="L30" class="letterbox"></div>
+      <div id="L31" class="letterbox"></div>
+      <div id="L32" class="letterbox"></div>
+      <div id="L33" class="letterbox"></div>
+      <div id="L34" class="letterbox"></div>
+
+      <div id="L40" class="letterbox"></div>
+      <div id="L41" class="letterbox"></div>
+      <div id="L42" class="letterbox"></div>
+      <div id="L43" class="letterbox"></div>
+      <div id="L44" class="letterbox"></div>                  
+    </div>
+    <br>
+    <br>
+    <div id="alphabet">
+      <div id="ALPHA-Q" class="keyboard">Q</div>
+      <div id="ALPHA-W" class="keyboard">W</div>
+      <div id="ALPHA-E" class="keyboard">E</div>
+      <div id="ALPHA-R" class="keyboard">R</div>
+      <div id="ALPHA-T" class="keyboard">T</div>
+      <div id="ALPHA-Y" class="keyboard">Y</div>
+      <div id="ALPHA-U" class="keyboard">U</div>
+      <div id="ALPHA-I" class="keyboard">I</div>
+      <div id="ALPHA-O" class="keyboard">O</div>
+      <div id="ALPHA-P" class="keyboard">P</div>
+
+      <div id="ALPHA-A" class="keyboard">A</div>
+      <div id="ALPHA-S" class="keyboard">S</div>
+      <div id="ALPHA-D" class="keyboard">D</div>
+      <div id="ALPHA-F" class="keyboard">F</div>
+      <div id="ALPHA-G" class="keyboard">G</div>
+      <div id="ALPHA-H" class="keyboard">H</div>
+      <div id="ALPHA-J" class="keyboard">J</div>
+      <div id="ALPHA-K" class="keyboard">K</div>
+      <div id="ALPHA-L" class="keyboard">L</div>
+
+      <div></div>      
+
+      <div></div>            
+      <div id="ALPHA-Z" class="keyboard">Z</div>
+      <div id="ALPHA-X" class="keyboard">X</div>
+      <div id="ALPHA-C" class="keyboard">C</div>
+      <div id="ALPHA-V" class="keyboard">V</div>
+      <div id="ALPHA-B" class="keyboard">B</div>
+      <div id="ALPHA-N" class="keyboard">N</div>
+      <div id="ALPHA-M" class="keyboard">M</div>
+      
+    </div>
+    <script>
+      'use strict';
+      var messageArea = document.getElementById("message-area");
+      
+      var currentRow = 0;
+      var currentCol = 0;
+      var gridArray = {}
+      var dictionary = null; 
+
+      var targetWord = "Tater".substring(0,5).toUpperCase();
+
+      const GAME_PHASE_PLAY = 0
+      const GAME_PHASE_OVER = 1;
+      var gamePhase = GAME_PHASE_PLAY;
+      
+
+      function setMessage(msg) {
+          messageArea.innerHTML = msg; 
+      }
+      
+      
+      // returns true if the current row is a valid
+      // 5 letter word
+      function checkCurrentRow() {
+          setMessage("");
+          if (currentCol < 5) {
+              return false;
+          }
+
+          var word = "";
+
+          for (var i = 0; i < 5; i++) {
+              word += gridArray[currentRow][i].innerText;
+          }
+
+          if (dictionary.indexOf(word) > -1) {
+              return true;
+          }
+
+          //console.log("'"+word+"' isn't in the dictionary");
+          setMessage("'"+word+"' isn't in the dictionary");
+          return false;
+
+      }
+
+
+      // value is three-state:  undefined, true, false
+      // undefined represents 'unknown' state
+      function setKeyboardDisplay(letter, value) {
+          var keyboardKey = document.getElementById("ALPHA-"+letter);
+          if (value === undefined) {
+              keyboardKey.classList.remove("bggray");
+              keyboardKey.classList.remove("bggreen");
+          } else if (value) {
+              keyboardKey.classList.add("bggreen");
+          } else {
+              keyboardKey.classList.add("bggray");
+          }
+
+      }
+
+      function clearKeyboardDisplay() {
+          // probably a better way to do this
+          var arr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+          for (var i in arr) {
+              setKeyboardDisplay(arr[i], undefined);
+          }
+      }
+      
+      // returns true if the player has correctly found the word
+      // this algorithm needs to account for the multiplicity of
+      // letters in both words 
+      function scoreCurrentRow() {
+          var hasWon = true;
+          var row = gridArray[currentRow];
+          
+          var targetWordArray = targetWord.split("");
+          var rowWordArray = new Array();
+
+          // create a rowArray and 
+          // set the keyboard display state too
+          for (var i = 0; i < 5; i++) {
+              rowWordArray.push(row[i].innerText);
+              setKeyboardDisplay(row[i].innerText,
+                          targetWord.indexOf(row[i].innerText) > -1);
+          }
+
+          // eliminate the exact matches, denote by '0'
+          for (var i = 0; i < 5; i++) {
+              if (rowWordArray[i] == targetWordArray[i]) { 
+                  rowWordArray[i] = "0";
+                  targetWordArray[i] = "";
+              }
+          }
+          //console.log(targetWordArray);
+          //console.log(rowWordArray);
+
+          // eliminate letters that occur in some place, until
+          // we run out, mark by '1'
+          for (var i = 0; i < 5; i++) {
+              if (rowWordArray[i] == "0") {
+                  continue; 
+              }
+
+              var idx = targetWordArray.indexOf(rowWordArray[i])
+              if (idx > -1) { 
+                  rowWordArray[i] = "1";
+                  targetWordArray[idx] = "";
+              }
+          }          
+          //console.log(targetWordArray);
+          //console.log(rowWordArray);
+          
+          for (var i = 0; i < 5; i++) {
+              switch (rowWordArray[i]) {
+              case "0":
+                  gridArray[currentRow][i].classList.add("bggreen");
+                  break;
+              case "1":
+                  gridArray[currentRow][i].classList.add("bgyellow");
+                  hasWon = false;
+                  break;
+              default:
+                  gridArray[currentRow][i].classList.add("bggray");
+                  hasWon = false;
+                  break;
+              }
+          }
+          return hasWon;
+      }
+      
+      function isAlpha(c) {
+          return /^[A-Za-z]$/i.test(c);
+      }
+
+      function keyHandler(event) {
+          if (gamePhase == GAME_PHASE_OVER) {
+              if (event.code == "Enter") {
+                  resetGame();
+                  setMessage("");
+                  gamePhase = GAME_PHASE_PLAY;
+              }
+              return;
+          }
+          
+          if (isAlpha(event.key) && !event.ctrlKey && !event.metaKey) {
+              if (currentCol < 5) {
+                  gridArray[currentRow][currentCol].innerHTML = event.key.toUpperCase();
+                  currentCol += 1;
+              }
+          } else {
+              switch (event.code) {
+              case "Backspace":
+                  if (currentCol > 0) {
+                      currentCol -= 1;                      
+                      gridArray[currentRow][currentCol].innerHTML = "";
+                      
+                  }
+                  break;
+              case "Enter":
+                  if (checkCurrentRow()) {
+                      //console.log("Word ok");
+
+                      if (scoreCurrentRow()) {
+                          // player won
+                          setMessage("Congratulations.  Play Again?<br>Press 'ENTER' to start.");
+                          gamePhase = GAME_PHASE_OVER;
+                          return;
+                      } else {
+                          if (currentRow == 4) {
+                              setMessage("Sorry.  Play Again?<br>Press 'ENTER' to start.");
+                              gamePhase = GAME_PHASE_OVER;
+                              return;
+                          }
+                      }
+                      
+                      if (currentCol > 0 && currentRow < 4) {
+                          currentRow += 1;                      
+                          currentCol = 0;
+                      }
+                  }
+                  break;                  
+              }
+
+          }
+
+          
+      }
+
+      function resetGame() {
+          currentRow = 0;
+          currentCol = 0;          
+          for (var i=0; i < 5; i++) {
+              for (var j=0; j < 5; j++) {
+                  var letterbox = gridArray[i][j];
+                  letterbox.innerHTML = "";
+                  letterbox.classList.remove("bggray");
+                  letterbox.classList.remove("bggreen");
+                  letterbox.classList.remove("bgyellow");
+              }
+          }
+
+          clearKeyboardDisplay();
+          
+          var dictionaryLength = dictionary.length;
+          var randomEntry = Math.floor(Math.random()*dictionaryLength);
+          targetWord = dictionary[randomEntry].toUpperCase();
+
+          gamePhase = GAME_PHASE_PLAY;
+          console.log("word is "+targetWord);
+      }
+
+      
+      window.onload=function() {
+          document.addEventListener("keydown", keyHandler);
+          for (var i=0; i < 5; i++) {
+              gridArray[i] = new Object();
+              for (var j=0; j < 5; j++) {
+                  var name = "L"+String(i)+String(j);
+                  var letterbox = document.getElementById(name);
+                  letterbox.innerHTML="";
+                  gridArray[i][j] = letterbox;
+              }
+          }
+
+          const xhttp = new XMLHttpRequest();
+          xhttp.onload = function() {
+              dictionary = this.responseText.split("\n")
+              resetGame();
+          }
+          xhttp.open("GET", "wordlist", true);
+          xhttp.send();
+          
+
+      }
+    </script>
+    
+  </body>
+</html>
