@@ -1,10 +1,11 @@
 
 
-Quick and Dirty Mastermind-ish Word Game Practice.
+Quick and Dirty Mastermind-ish Word Game Practice
+=================================================
 
 Keyboard only.
 
-
+published at <https://rrmm.github.io/mastermind-word/>
 
 --
 
