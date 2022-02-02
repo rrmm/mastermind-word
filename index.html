@@ -36,28 +36,37 @@
 
       #alphabet {
           display: grid;
-          grid-template-columns: repeat(10, 2em);
-          grid-template-rows: 2em 2em 2em;
-                                       
-                           
-          gap: .25em;
+          grid-template-columns: repeat(10, 3em);
+          grid-template-rows: repeat(3,3em);
+          gap: .80em;
           justify-content: center;
       }
       
       .keyboard {
+          display: flex;
           font-family: sans;
           text-align: center;
           font-size: 1.25em;
           border: solid 2px;
-          justify-self: stretch;
+
+          justify-content: center;
+          align-items: center;
+      }
+
+      .backspace {
+          grid-column-start: 9;
+          grid-column-end: 11;
+          
       }
       
 
       .bggray {
+          color: white;
           background: gray;
       }
 
       .bggreen {
+          color: white;
           background: green;
       }
 
@@ -129,7 +138,8 @@
 
       <div></div>      
 
-      <div></div>            
+
+      <div id="ENTER"  class="keyboard">&#x23CE;</div>      
       <div id="ALPHA-Z" class="keyboard">Z</div>
       <div id="ALPHA-X" class="keyboard">X</div>
       <div id="ALPHA-C" class="keyboard">C</div>
@@ -137,7 +147,9 @@
       <div id="ALPHA-B" class="keyboard">B</div>
       <div id="ALPHA-N" class="keyboard">N</div>
       <div id="ALPHA-M" class="keyboard">M</div>
-      
+
+
+      <div id="BACKSPACE"  class="keyboard backspace">&#x232B;</div>
     </div>
     <p>
     <div id="url-area"><a href="https://github.com/rrmm/mastermind-word">https://github.com/rrmm/mastermind-word</a></div>
@@ -354,8 +366,35 @@
       }
 
       
+      function pointerHandler(event) {
+          // synthesize enough of the event object to
+          // make our code above work for either keyboard input or
+          // this 
+          var keyEvent = new Object();
+          keyEvent.target = event.target;          
+          keyEvent.ctrlKey = false;
+          keyEvent.metaKey = false;          
+          if (event.target.id == "ENTER") {
+              keyEvent.code = "Enter";              
+          } else if (event.target.id == "BACKSPACE") {
+              keyEvent.code = "Backspace";
+          } else {
+              var keyChar = event.target.innerHTML;
+              keyEvent.key = keyChar;
+          }
+          keyHandler(keyEvent);          
+      }
+      
+      function connectPointerEvents() {
+          var els = document.getElementsByClassName("keyboard");
+          Array.from(els).forEach((el) => {
+              el.addEventListener("pointerdown", pointerHandler);
+          });
+      }
+      
       window.onload=function() {
           document.addEventListener("keydown", keyHandler);
+          connectPointerEvents();
           for (var i=0; i < 5; i++) {
               gridArray[i] = new Object();
               for (var j=0; j < 5; j++) {
@@ -373,8 +412,6 @@
           }
           xhttp.open("GET", "wordlist", true);
           xhttp.send();
-          
-
       }
     </script>
     
