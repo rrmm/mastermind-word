@@ -5,18 +5,49 @@
     <title>Mastermind Word Game Practice</title>
     <link rel="icon" href="data:,">
     <style>
+
+      :root {
+          --background-color: white;
+          --foreground-color: black;
+          font-family: sans, Arial, Helvetica;
+      }
+
+      body {
+          background: var(--background-color);
+      }
+
+      #topline {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+      }
+
       #message-area {
+          display: flex;
+          align-items: center;
+          color: var(--foreground-color);
           text-align: center;
-          font-family: sans;
           height: 3em;
+          justify-self: center;
+      }
+
+      #switch-div {
+          display: flex;
+          align-items: center;
+          color: var(--foreground-color);
+          /* for grid item */
+          justify-self: end;
       }
 
       #url-area {
+          color: var(--foreground-color);
           text-align: center;
-          font-family: sans;
           height: 4em;
       }
-      
+
+      a:link, a:visited, a:hover, a:active, a:focus {
+          color: var(--foreground-color);
+      }
+
       #board {
           display: grid;
           grid-template-columns: repeat(5, 4em);
@@ -26,13 +57,12 @@
       }
 
       .letterbox {
-          font-family: sans;
+          color: var(--foreground-color);
           text-align: center;
           font-size: 3em;
-          border: solid 2px black;
+          border: solid 2px var(--foreground-color);
           justify-self: stretch;
       }
-
 
       #alphabet {
           display: grid;
@@ -40,14 +70,14 @@
           grid-template-rows: repeat(3,3em);
           gap: .80em;
           justify-content: center;
+          color: var(--foreground-color);
       }
-      
+
       .keyboard {
           display: flex;
-          font-family: sans;
           text-align: center;
           font-size: 1.25em;
-          border: solid 2px black;
+          border: solid 2px var(--foreground-color);
           justify-content: center;
           align-items: center;
       }
@@ -56,7 +86,6 @@
           grid-column-start: 9;
           grid-column-end: 11;
       }
-      
 
       .bggray {
           color: white;
@@ -69,14 +98,33 @@
       }
 
       .bgyellow {
+          color: gray;
           background: yellow;
       }
-      
+
+      #theme-slider {
+          appearance: none;
+          padding: 16px 30px;
+          border-radius: 16px;
+          background: radial-gradient(circle 12px, white 100%, transparent calc(100% + 1px)) #ccc -14px;
+          transition: 0.3s ease-in-out;
+      }
+
+      #theme-slider:checked {
+          background-color: dodgerBlue;
+          background-position: 14px;
+      }
       
     </style>
   </head>
   <body>
-    <div id="message-area">
+    <div id="topline">
+      <div></div>
+      <div id="message-area"></div>
+      <div id="switch-div">
+        Light/Dark Theme&nbsp;&nbsp;
+        <input id="theme-slider" type="checkbox">
+      </div>
     </div>
 
     <div id="board">
@@ -389,9 +437,26 @@
               el.addEventListener("pointerdown", pointerHandler);
           });
       }
+
+
+      function lightDarkSwitchHandler(event) {
+          var value=event.target.checked;
+          var r = document.querySelector(":root");
+          if (!value) {
+              // light-mode
+              r.style.setProperty("--background-color", "white");
+              r.style.setProperty("--foreground-color", "black");
+          } else {
+              // dark mode
+              r.style.setProperty("--background-color", "black");
+              r.style.setProperty("--foreground-color", "lightgray");
+          }
+      }
       
       window.onload=function() {
           document.addEventListener("keydown", keyHandler);
+          var themeSlider = document.getElementById("theme-slider");
+          themeSlider.addEventListener("input", lightDarkSwitchHandler);
           connectPointerEvents();
           for (var i=0; i < 5; i++) {
               gridArray[i] = new Object();
